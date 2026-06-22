@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Sanagiri Town Portal</title>
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232D1B69'/><text y='24' x='4' font-size='22'>⚙️</text></svg>" />
+  <style>
+    body {
+      font-family: var(--font-body);
+      background: var(--admin-bg);
+      color: var(--admin-text);
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    /* LOGIN */
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+      background: linear-gradient(135deg, var(--color-primary-dark), var(--admin-bg));
+    }
+    .login-card {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .login-logo { font-size: 48px; margin-bottom: var(--space-md); }
+    .login-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--color-white); }
+    .login-sub { color: var(--admin-muted); font-size: 14px; margin-top: var(--space-sm); margin-bottom: var(--space-xl); }
+    .google-btn {
+      display: flex; align-items: center; justify-content: center; gap: var(--space-md);
+      width: 100%; padding: 14px; border-radius: var(--radius-md);
+      background: var(--color-white); color: #333;
+      font-size: 15px; font-weight: 600; font-family: var(--font-body);
+      border: none; cursor: pointer; transition: all var(--transition);
+    }
+    .google-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+    .google-btn img { width: 20px; height: 20px; }
+
+    /* DASHBOARD */
+    .admin-layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 240px;
+      background: var(--admin-surface);
+      border-right: 1px solid var(--admin-border);
+      padding: var(--space-lg) 0;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-logo {
+      padding: var(--space-md) var(--space-lg);
+      display: flex; align-items: center; gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+      border-bottom: 1px solid var(--admin-border);
+      padding-bottom: var(--space-lg);
+    }
+    .sidebar-logo-icon { font-size: 24px; }
+    .sidebar-logo-text { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--color-white); }
+
+    .sidebar-section { padding: var(--space-sm) var(--space-lg); margin-top: var(--space-md); }
+    .sidebar-section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--admin-muted); margin-bottom: var(--space-sm); }
+
+    .sidebar-link {
+      display: flex; align-items: center; gap: var(--space-md);
+      padding: 10px var(--space-lg);
+      font-size: 14px; font-weight: 500;
+      color: var(--admin-muted);
+      cursor: pointer;
+      transition: all var(--transition);
+      border-left: 3px solid transparent;
+      margin: 0 -0px;
+    }
+    .sidebar-link:hover { color: var(--color-white); background: rgba(255,255,255,0.05); }
+    .sidebar-link.active { color: var(--color-accent-light); border-left-color: var(--color-accent); background: rgba(201,150,12,0.08); }
+    .sidebar-link .icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-bottom { margin-top: auto; padding: var(--space-lg); border-top: 1px solid var(--admin-border); }
+    .admin-user { display: flex; align-items: center; gap: var(--space-sm); }
+    .admin-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--color-primary); }
+    .admin-name { font-size: 13px; font-weight: 600; color: var(--color-white); }
+    .admin-role { font-size: 11px; color: var(--admin-muted); }
+
+    .main-content { margin-left: 240px; flex: 1; }
+
+    .admin-header {
+      background: var(--admin-surface);
+      border-bottom: 1px solid var(--admin-border);
+      padding: var(--space-md) var(--space-xl);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 5;
+    }
+    .admin-header h1 { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--color-white); }
+    .admin-header-right { display: flex; align-items: center; gap: var(--space-md); }
+
+    .content-area { padding: var(--space-xl); }
+
+    /* PANELS */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); margin-bottom: var(--space-xl); }
+    .stat-card {
+      background: var(--admin-surface); border: 1px solid var(--admin-border);
+      border-radius: var(--radius-lg); padding: var(--space-lg);
+    }
+    .stat-icon { font-size: 24px; margin-bottom: var(--space-sm); }
+    .stat-num { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--color-accent-light); }
+    .stat-label { font-size: 13px; color: var(--admin-muted); margin-top: 2px; }
+
+    /* TABLE */
+    .admin-table-wrap {
+      background: var(--admin-surface);
+      border: 1px solid var(--admin-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .table-header {
+      padding: var(--space-lg) var(--space-xl);
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--admin-border);
+      gap: var(--space-md); flex-wrap: wrap;
+    }
+    .table-title { font-size: 16px; font-weight: 600; color: var(--color-white); }
+    .table-search {
+      padding: 8px 14px; border: 1px solid var(--admin-border);
+      border-radius: var(--radius-sm); background: var(--admin-bg);
+      color: var(--admin-text); font-size: 14px; font-family: var(--font-body); outline: none;
+      width: 240px;
+    }
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th {
+      background: rgba(0,0,0,0.3); color: var(--admin-muted);
+      padding: 10px 16px; text-align: left; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .admin-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--admin-border);
+      font-size: 14px; color: var(--admin-text); vertical-align: middle;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+    /* BADGES */
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: var(--radius-full);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .badge-green  { background: rgba(46,125,50,0.2);  color: #66bb6a; }
+    .badge-yellow { background: rgba(245,127,23,0.2); color: #ffa726; }
+    .badge-red    { background: rgba(198,40,40,0.2);  color: #ef5350; }
+    .badge-blue   { background: rgba(21,101,192,0.2); color: #42a5f5; }
+
+    /* FORM */
+    .admin-form { display: flex; flex-direction: column; gap: var(--space-md); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+    .form-group label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--admin-muted); margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 10px 14px;
+      background: var(--admin-bg); border: 1.5px solid var(--admin-border);
+      border-radius: var(--radius-sm); color: var(--admin-text);
+      font-size: 14px; font-family: var(--font-body); outline: none;
+      transition: border-color var(--transition);
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--color-accent); }
+    .form-group select option { background: var(--admin-bg); }
+
+    /* MODAL */
+    .admin-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      padding: var(--space-lg); backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none; transition: opacity var(--transition);
+    }
+    .admin-modal-overlay.open { opacity: 1; pointer-events: all; }
+    .admin-modal {
+      background: var(--admin-surface); border: 1px solid var(--admin-border);
+      border-radius: var(--radius-xl); max-width: 600px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+      transform: scale(0.95); transition: transform var(--transition);
+    }
+    .admin-modal-overlay.open .admin-modal { transform: scale(1); }
+    .admin-modal-header {
+      padding: var(--space-lg) var(--space-xl);
+      border-bottom: 1px solid var(--admin-border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-modal-title { font-family: var(--font-display); font-size: 20px; color: var(--color-white); font-weight: 700; }
+    .admin-modal-body { padding: var(--space-xl); }
+    .modal-close-btn { background: none; border: none; color: var(--admin-muted); font-size: 20px; cursor: pointer; }
+
+    /* BUTTONS */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font-body); border: none; transition: all var(--transition); }
+    .btn-primary { background: var(--color-primary); color: white; }
+    .btn-primary:hover { background: var(--color-primary-dark); }
+    .btn-accent { background: var(--color-accent); color: white; }
+    .btn-accent:hover { background: #A87A08; }
+    .btn-danger { background: rgba(198,40,40,0.15); color: #ef5350; border: 1px solid rgba(198,40,40,0.3); }
+    .btn-danger:hover { background: rgba(198,40,40,0.25); }
+    .btn-ghost { background: transparent; color: var(--admin-muted); border: 1px solid var(--admin-border); }
+    .btn-ghost:hover { color: var(--color-white); border-color: rgba(255,255,255,0.3); }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+    /* PENDING BADGE */
+    .pending-dot {
+      width: 8px; height: 8px; background: var(--color-accent);
+      border-radius: 50%; display: inline-block; margin-left: 6px;
+    }
+
+    /* TOAST */
+    #admin-toast { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: var(--admin-surface); border: 1px solid var(--admin-border); color: var(--admin-text); padding: 12px 18px; border-radius: var(--radius-md); font-size: 14px; display: flex; align-items: center; gap: 8px; animation: slideIn 0.3s ease; max-width: 300px; }
+    .toast.success { border-left: 3px solid #66bb6a; }
+    .toast.error   { border-left: 3px solid #ef5350; }
+    .toast.info    { border-left: 3px solid var(--color-accent); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 200px; }
+      .main-content { margin-left: 200px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page" class="login-page">
+  <div class="login-card">
+    <div class="login-logo">🏛️</div>
+    <div class="login-title">Sanagiri Admin</div>
+    <div class="login-sub">Sign in with your Google account to manage the Sanagiri town portal</div>
+    <button class="google-btn" id="google-login-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="admin-dashboard" style="display:none;" class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="sidebar-logo-icon">🏛️</span>
+      <span class="sidebar-logo-text">Sanagiri</span>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Overview</div>
+      <div class="sidebar-link active" data-panel="dashboard"><span class="icon">📊</span> Dashboard</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Manage Content</div>
+      <div class="sidebar-link" data-panel="requests"><span class="icon">📥</span> Business Requests <span class="pending-dot" id="req-dot" style="display:none;"></span></div>
+      <div class="sidebar-link" data-panel="businesses"><span class="icon">🏪</span> Businesses</div>
+      <div class="sidebar-link" data-panel="textiles"><span class="icon">🥻</span> Textiles</div>
+      <div class="sidebar-link" data-panel="temples"><span class="icon">🛕</span> Temples</div>
+      <div class="sidebar-link" data-panel="tourism"><span class="icon">📍</span> Tourism</div>
+      <div class="sidebar-link" data-panel="news"><span class="icon">📰</span> News & Events</div>
+      <div class="sidebar-link" data-panel="govt"><span class="icon">🏛️</span> Govt Offices</div>
+      <div class="sidebar-link" data-panel="emergency"><span class="icon">🚨</span> Emergency</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Settings</div>
+      <div class="sidebar-link" data-panel="settings"><span class="icon">⚙️</span> Site Settings</div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="admin-user">
+        <img class="admin-avatar" id="admin-avatar" src="" alt="avatar" onerror="this.style.display='none'" />
+        <div>
+          <div class="admin-name" id="admin-name">Admin</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logout-btn" style="width:100%; justify-content:center; margin-top:12px;">Sign Out</button>
+      <a href="index.html" class="btn btn-ghost btn-sm" style="width:100%; justify-content:center; margin-top:8px; text-decoration:none;">🌐 View Site</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <div class="admin-header">
+      <h1 id="panel-title">Dashboard</h1>
+      <div class="admin-header-right">
+        <button class="btn btn-accent" id="header-add-btn" style="display:none;" onclick="openAddModal()">➕ Add New</button>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- DASHBOARD PANEL -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon">🏪</div><div class="stat-num" id="stat-biz">—</div><div class="stat-label">Businesses</div></div>
+          <div class="stat-card"><div class="stat-icon">🛕</div><div class="stat-num" id="stat-temple">—</div><div class="stat-label">Temples</div></div>
+          <div class="stat-card"><div class="stat-icon">🥻</div><div class="stat-num" id="stat-textile">—</div><div class="stat-label">Textile Shops</div></div>
+          <div class="stat-card"><div class="stat-icon">📰</div><div class="stat-num" id="stat-news">—</div><div class="stat-label">News Items</div></div>
+        </div>
+        <div class="admin-table-wrap" style="margin-top: var(--space-lg);">
+          <div class="table-header"><span class="table-title">📥 Pending Business Requests</span></div>
+          <div style="padding: var(--space-lg); color: var(--admin-muted); font-size: 14px; text-align: center;" id="dashboard-requests">Loading...</div>
+        </div>
+      </div>
+
+      <!-- BUSINESS REQUESTS PANEL -->
+      <div class="panel" id="panel-requests">
+        <div class="admin-table-wrap">
+          <div class="table-header">
+            <span class="table-title">📥 Business Requests (Pending Approval)</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead><tr><th>Business</th><th>Category</th><th>Address</th><th>Contact</th><th>Actions</th></tr></thead>
+              <tbody id="requests-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERIC LIST PANEL (businesses, textiles, temples, tourism, news, govt, emergency) -->
+      <div class="panel" id="panel-businesses"><div class="admin-table-wrap"><div class="table-header"><span class="table-title">🏪 Businesses</span><input class="table-search" placeholder="Search..." id="search-businesses" /></div><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Category</th><th>Address</th><th>Phone</th><th>Actions</th></tr></thead><tbody id="tbody-businesses"></tbody></table></div></div></div>
+
+      <div class="panel" id="panel-textiles"><div class="admin-table-wrap"><div class="table-header"><span class="table-title">🥻 Textile Shops</span><input class="table-search" placeholder="Search..." id="search-textiles" /></div><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Type</th><th>Address</th><th>Phone</th><th>Actions</th></tr></thead><tbody id="tbody-textiles"></tbody></table></div></div></div>
+
+      <div class="panel" id="panel-temples"><div class="admin-table-wrap"><div class="table-header"><span class="table-title">🛕 Temples</span><input class="table-search" placeholder="Search..." id="search-temples" /></div><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Deity</th><th>Location</th><th>Type</th><th>Actions</th></tr></thead><tbody id="tbody-temples"></tbody></table></div></div></div>
+
+      <div class="panel" id="panel-tourism"><div class="admin-table-wrap"><div class="table-header"><span class="table-title">📍 Tourism Places</span><input class="table-search" placeholder="Search..." id="search-tourism" /></div><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Type</th><th>Distance</th><th>Timing</th><th>Actions</th></tr></thead><tbody id="tbody-tourism"></tbody></table></div></div></div>
+
+      <div class="panel" id="panel-news"><div class="admin-table-wrap"><div class="table-header"><span class="table-title">📰 News & Events</span><input class="table-search" placeholder="Search..." id="search-news" /></div><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Title</th><th>Tag</th><th>Date</th><th>Actions</th></tr></thead><tbody id="tbody-news"></tbody></table></div></div></div>
+
+      <div class="panel" id="panel-govt"><div class="admin-table-wrap"><div class="table-header"><span class="table-title">🏛️ Government Offices</span><input class="table-search" placeholder="Search..." id="search-govt" /></div><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Office Name</th><th>Address</th><th>Phone</th><th>Hours</th><th>Actions</th></tr></thead><tbody id="tbody-govt"></tbody></table></div></div></div>
+
+      <div class="panel" id="panel-emergency"><div class="admin-table-wrap"><div class="table-header"><span class="table-title">🚨 Emergency Contacts</span></div><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Name</th><th>Number</th><th>Emoji</th><th>Actions</th></tr></thead><tbody id="tbody-emergency"></tbody></table></div></div></div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="admin-table-wrap">
+          <div class="table-header"><span class="table-title">⚙️ Site Settings</span></div>
+          <div style="padding: var(--space-xl);">
+            <div class="admin-form">
+              <div class="form-row">
+                <div class="form-group"><label>Announcement Bar Text</label><input type="text" id="setting-announcement" placeholder="Welcome text for the top bar" /></div>
+                <div class="form-group"><label>Site Tagline</label><input type="text" id="setting-tagline" placeholder="Site tagline / subtitle" /></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Cloudinary Cloud Name</label><input type="text" id="setting-cloudinary-name" placeholder="Your Cloudinary cloud name" /></div>
+                <div class="form-group"><label>Cloudinary Upload Preset</label><input type="text" id="setting-cloudinary-preset" placeholder="Upload preset name" /></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>EmailJS Service ID</label><input type="text" id="setting-emailjs-service" placeholder="EmailJS service ID" /></div>
+                <div class="form-group"><label>EmailJS Template ID</label><input type="text" id="setting-emailjs-template" placeholder="EmailJS template ID" /></div>
+              </div>
+              <div class="form-group"><label>EmailJS Public Key</label><input type="text" id="setting-emailjs-key" placeholder="EmailJS public key" /></div>
+              <button class="btn btn-accent" onclick="saveSettings()" style="width: fit-content;">💾 Save Settings to Firebase</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main-content -->
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="admin-modal-overlay" id="add-modal">
+  <div class="admin-modal">
+    <div class="admin-modal-header">
+      <span class="admin-modal-title" id="modal-title">Add New Item</span>
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="admin-modal-body">
+      <div class="admin-form" id="modal-form"></div>
+      <div style="display:flex; gap:12px; margin-top: var(--space-lg); justify-content: flex-end;">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-accent" id="modal-save-btn" onclick="saveItem()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast"></div>
+
+<script type="module">
+  import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc,
+           query, orderBy, where, serverTimestamp, setDoc, getDoc }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBGd3SjDPuuKZuRWga536rS56NLXno1kPo",
+    authDomain: "sangagiri.firebaseapp.com",
+    projectId: "sangagiri",
+    storageBucket: "sangagiri.firebasestorage.app",
+    messagingSenderId: "1067104477055",
+    appId: "1:1067104477055:web:1729edaa0c33e7b22c844a"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  // ── TOAST ──
+  function toast(msg, type='info') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const icons = {success:'✅', error:'❌', info:'ℹ️'};
+    t.innerHTML = `<span>${icons[type]}</span><span>${msg}</span>`;
+    document.getElementById('admin-toast').appendChild(t);
+    setTimeout(() => t.remove(), 3200);
+  }
+  window.toast = toast;
+
+  // ── AUTH ──
+  document.getElementById('google-login-btn').addEventListener('click', async () => {
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch(e) { toast('Login failed: ' + e.message, 'error'); }
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await signOut(auth);
+  });
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('admin-dashboard').style.display = 'flex';
+      document.getElementById('admin-name').textContent = user.displayName || user.email;
+      document.getElementById('admin-avatar').src = user.photoURL || '';
+      loadDashboard();
+    } else {
+      document.getElementById('login-page').style.display = 'flex';
+      document.getElementById('admin-dashboard').style.display = 'none';
+    }
+  });
+
+  // ── PANEL SWITCHING ──
+  const panelConfig = {
+    dashboard:  { title: '📊 Dashboard',              addBtn: false },
+    requests:   { title: '📥 Business Requests',      addBtn: false },
+    businesses: { title: '🏪 Businesses',             addBtn: true, col: 'businesses' },
+    textiles:   { title: '🥻 Textile Shops',          addBtn: true, col: 'textiles' },
+    temples:    { title: '🛕 Temples',                addBtn: true, col: 'temples' },
+    tourism:    { title: '📍 Tourism Places',         addBtn: true, col: 'tourism' },
+    news:       { title: '📰 News & Events',          addBtn: true, col: 'news' },
+    govt:       { title: '🏛️ Govt Offices',          addBtn: true, col: 'govt_offices' },
+    emergency:  { title: '🚨 Emergency Contacts',     addBtn: true, col: 'emergency_contacts' },
+    settings:   { title: '⚙️ Site Settings',         addBtn: false },
+  };
+
+  let currentPanel = 'dashboard';
+
+  document.querySelectorAll('.sidebar-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const panel = link.dataset.panel;
+      if (!panel) return;
+      currentPanel = panel;
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      link.classList.add('active');
+      document.getElementById(`panel-${panel}`)?.classList.add('active');
+      const cfg = panelConfig[panel] || {};
+      document.getElementById('panel-title').textContent = cfg.title || panel;
+      const addBtn = document.getElementById('header-add-btn');
+      addBtn.style.display = cfg.addBtn ? '' : 'none';
+      if (panel !== 'dashboard' && panel !== 'settings') loadPanel(panel);
+    });
+  });
+
+  // ── DASHBOARD ──
+  async function loadDashboard() {
+    const counts = ['businesses','temples','textiles','news'];
+    const statIds = { businesses:'stat-biz', temples:'stat-temple', textiles:'stat-textile', news:'stat-news' };
+    for (const col of counts) {
+      try {
+        const snap = await getDocs(collection(db, col));
+        document.getElementById(statIds[col]).textContent = snap.size;
+      } catch(e) { document.getElementById(statIds[col]).textContent = '0'; }
+    }
+    // Pending requests
+    try {
+      const snap = await getDocs(query(collection(db,'business_requests'), where('approved','==',false)));
+      const el = document.getElementById('dashboard-requests');
+      const dot = document.getElementById('req-dot');
+      if (snap.size > 0) {
+        dot.style.display = 'inline-block';
+        el.innerHTML = `<p style="margin-bottom:12px; color: var(--color-accent-light); font-weight:600;">${snap.size} pending request(s) waiting for approval</p><button class="btn btn-accent btn-sm" onclick="document.querySelector('[data-panel=requests]').click()">Review Requests</button>`;
+      } else {
+        el.textContent = 'No pending business requests.';
+      }
+    } catch(e) { document.getElementById('dashboard-requests').textContent = 'Unable to load requests.'; }
+  }
+  window.loadDashboard = loadDashboard;
+
+  // ── LOAD PANEL DATA ──
+  const tableFields = {
+    businesses: ['name','category','address','phone'],
+    textiles:   ['name','type','address','phone'],
+    temples:    ['name','deity','location','type'],
+    tourism:    ['name','type','distance','timing'],
+    news:       ['title','tag','createdAt'],
+    govt:       ['name','address','phone','hours'],
+    emergency:  ['name','number','emoji'],
+  };
+
+  async function loadPanel(panel) {
+    if (panel === 'requests') { loadRequests(); return; }
+    const colName = panelConfig[panel]?.col || panel;
+    const tbodyId = `tbody-${panel}`;
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;"><div class="spinner" style="margin:0 auto;width:20px;height:20px;border:2px solid var(--admin-border);border-top-color:var(--color-accent);border-radius:50%;animation:spin 0.7s linear infinite;"></div></td></tr>';
+    try {
+      const snap = await getDocs(query(collection(db, colName), orderBy('name').catch ? query(collection(db, colName)) : query(collection(db, colName))));
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (!items.length) { tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--admin-muted);">No items yet. Click "Add New" to get started.</td></tr>`; return; }
+      tbody.innerHTML = items.map(item => {
+        const fields = tableFields[panel] || ['name'];
+        const cells = fields.map(f => {
+          let val = item[f] || '—';
+          if (f === 'createdAt' && item[f]?.toDate) val = item[f].toDate().toLocaleDateString('en-IN');
+          return `<td>${val}</td>`;
+        }).join('');
+        return `<tr>${cells}<td>
+          <button class="btn btn-ghost btn-sm" onclick="editItem('${panel}','${item.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('${colName}','${item.id}')">🗑️</button>
+        </td></tr>`;
+      }).join('');
+    } catch(e) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--admin-muted);">No items yet. Click "Add New" to get started.</td></tr>`;
+    }
+  }
+
+  // ── REQUESTS ──
+  async function loadRequests() {
+    const tbody = document.getElementById('requests-tbody');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;">Loading...</td></tr>';
+    try {
+      const snap = await getDocs(query(collection(db,'business_requests'), where('approved','==',false)));
+      if (!snap.size) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--admin-muted);">No pending requests.</td></tr>'; return; }
+      tbody.innerHTML = snap.docs.map(d => {
+        const i = { id: d.id, ...d.data() };
+        return `<tr>
+          <td><strong>${i.name}</strong></td>
+          <td><span class="badge badge-blue">${i.category || '—'}</span></td>
+          <td>${i.address || '—'}</td>
+          <td>${i.contact || i.phone || '—'}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-accent btn-sm" onclick="approveRequest('${d.id}')">✅ Approve</button>
+            <button class="btn btn-danger btn-sm" onclick="rejectRequest('${d.id}')">❌ Reject</button>
+          </td>
+        </tr>`;
+      }).join('');
+    } catch(e) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--admin-muted);">Error loading requests.</td></tr>'; }
+  }
+
+  window.approveRequest = async (reqId) => {
+    try {
+      const reqDoc = await getDoc(doc(db, 'business_requests', reqId));
+      const data = reqDoc.data();
+      await addDoc(collection(db,'businesses'), { ...data, approved: true, addedAt: serverTimestamp() });
+      await deleteDoc(doc(db,'business_requests', reqId));
+      toast('Business approved and listed!', 'success');
+      loadRequests();
+    } catch(e) { toast('Error: ' + e.message, 'error'); }
+  };
+
+  window.rejectRequest = async (reqId) => {
+    if (!confirm('Reject and delete this request?')) return;
+    await deleteDoc(doc(db,'business_requests', reqId));
+    toast('Request rejected', 'info');
+    loadRequests();
+  };
+
+  // ── ADD / EDIT MODAL ──
+  const formConfigs = {
+    businesses: [
+      { key:'name', label:'Business Name', required:true },
+      { key:'category', label:'Category', type:'select', options:['grocery','medical','petrol','bank','hotel','education','textile','other'] },
+      { key:'description', label:'Description', type:'textarea' },
+      { key:'address', label:'Address / Location', required:true },
+      { key:'phone', label:'Phone Number' },
+      { key:'mapUrl', label:'Google Maps URL' },
+    ],
+    textiles: [
+      { key:'name', label:'Shop Name', required:true },
+      { key:'type', label:'Type (Silk / Cotton / Handloom)', required:true },
+      { key:'description', label:'Description', type:'textarea' },
+      { key:'address', label:'Address', required:true },
+      { key:'phone', label:'Phone' },
+      { key:'specialty', label:'Specialty (e.g. Pure Silk)' },
+      { key:'mapUrl', label:'Google Maps URL' },
+    ],
+    temples: [
+      { key:'name', label:'Temple Name', required:true },
+      { key:'deity', label:'Deity / God', required:true },
+      { key:'type', label:'Type (e.g. Shiva Temple)' },
+      { key:'description', label:'Description', type:'textarea' },
+      { key:'location', label:'Location / Area' },
+      { key:'timing', label:'Timings' },
+      { key:'mapUrl', label:'Google Maps URL' },
+    ],
+    tourism: [
+      { key:'name', label:'Place Name', required:true },
+      { key:'type', label:'Type (Temple / Nature / Heritage)' },
+      { key:'description', label:'Description', type:'textarea' },
+      { key:'distance', label:'Distance / Location' },
+      { key:'timing', label:'Timings' },
+      { key:'mapUrl', label:'Google Maps URL' },
+    ],
+    news: [
+      { key:'title', label:'News Title', required:true },
+      { key:'tag', label:'Tag (e.g. Festival, Announcement)' },
+      { key:'content', label:'Content', type:'textarea', required:true },
+    ],
+    govt: [
+      { key:'name', label:'Office Name', required:true },
+      { key:'address', label:'Address', required:true },
+      { key:'phone', label:'Phone / STD Number' },
+      { key:'hours', label:'Working Hours' },
+    ],
+    emergency: [
+      { key:'name', label:'Service Name', required:true },
+      { key:'number', label:'Phone Number', required:true },
+      { key:'emoji', label:'Emoji (e.g. 🚒)' },
+    ],
+  };
+
+  let editingDoc = null; // { panel, id }
+
+  window.openAddModal = () => {
+    editingDoc = null;
+    const cfg = formConfigs[currentPanel];
+    if (!cfg) return;
+    document.getElementById('modal-title').textContent = `Add ${panelConfig[currentPanel]?.title?.replace(/^[^\s]+\s/,'')}`;
+    document.getElementById('modal-form').innerHTML = renderForm(cfg, {});
+    document.getElementById('add-modal').classList.add('open');
+  };
+
+  window.editItem = async (panel, id) => {
+    const colName = panelConfig[panel]?.col || panel;
+    const snap = await getDoc(doc(db, colName, id));
+    const data = snap.data() || {};
+    editingDoc = { panel, id, colName };
+    const cfg = formConfigs[panel];
+    document.getElementById('modal-title').textContent = `Edit Item`;
+    document.getElementById('modal-form').innerHTML = renderForm(cfg, data);
+    document.getElementById('add-modal').classList.add('open');
+  };
+
+  function renderForm(cfg, data) {
+    return cfg.map(f => {
+      const val = data[f.key] || '';
+      if (f.type === 'textarea') return `<div class="form-group"><label>${f.label}${f.required?'*':''}</label><textarea id="field-${f.key}" rows="3">${val}</textarea></div>`;
+      if (f.type === 'select') return `<div class="form-group"><label>${f.label}</label><select id="field-${f.key}"><option value="">Select...</option>${f.options.map(o=>`<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('')}</select></div>`;
+      return `<div class="form-group"><label>${f.label}${f.required?'*':''}</label><input type="text" id="field-${f.key}" value="${val}" placeholder="${f.label}" /></div>`;
+    }).join('');
+  }
+
+  window.closeModal = () => document.getElementById('add-modal').classList.remove('open');
+  document.getElementById('add-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+  window.saveItem = async () => {
+    const cfg = formConfigs[currentPanel];
+    if (!cfg) return;
+    const data = {};
+    for (const f of cfg) {
+      const el = document.getElementById(`field-${f.key}`);
+      if (!el) continue;
+      if (f.required && !el.value.trim()) { toast(`${f.label} is required`, 'error'); return; }
+      data[f.key] = el.value.trim();
+    }
+    const saveBtn = document.getElementById('modal-save-btn');
+    saveBtn.textContent = 'Saving...'; saveBtn.disabled = true;
+    try {
+      const colName = editingDoc ? editingDoc.colName : (panelConfig[currentPanel]?.col || currentPanel);
+      if (editingDoc) {
+        await updateDoc(doc(db, colName, editingDoc.id), data);
+        toast('Updated successfully!', 'success');
+      } else {
+        data.createdAt = serverTimestamp();
+        await addDoc(collection(db, colName), data);
+        toast('Added successfully!', 'success');
+      }
+      closeModal();
+      loadPanel(currentPanel);
+    } catch(e) { toast('Error: ' + e.message, 'error'); }
+    saveBtn.textContent = 'Save'; saveBtn.disabled = false;
+  };
+
+  window.deleteItem = async (colName, id) => {
+    if (!confirm('Delete this item? This cannot be undone.')) return;
+    try {
+      await deleteDoc(doc(db, colName, id));
+      toast('Deleted', 'info');
+      loadPanel(currentPanel);
+    } catch(e) { toast('Error: ' + e.message, 'error'); }
+  };
+
+  // ── SETTINGS ──
+  window.saveSettings = async () => {
+    const settings = {
+      announcement: document.getElementById('setting-announcement').value,
+      tagline: document.getElementById('setting-tagline').value,
+      cloudinary_cloud_name: document.getElementById('setting-cloudinary-name').value,
+      cloudinary_upload_preset: document.getElementById('setting-cloudinary-preset').value,
+      emailjs_service_id: document.getElementById('setting-emailjs-service').value,
+      emailjs_template_id: document.getElementById('setting-emailjs-template').value,
+      emailjs_public_key: document.getElementById('setting-emailjs-key').value,
+      updatedAt: serverTimestamp()
+    };
+    try {
+      await setDoc(doc(db, 'site_settings', 'config'), settings);
+      toast('Settings saved to Firebase!', 'success');
+    } catch(e) { toast('Error saving: ' + e.message, 'error'); }
+  };
+
+  // Load existing settings
+  async function loadSettings() {
+    try {
+      const snap = await getDoc(doc(db, 'site_settings', 'config'));
+      if (snap.exists()) {
+        const s = snap.data();
+        document.getElementById('setting-announcement').value      = s.announcement || '';
+        document.getElementById('setting-tagline').value           = s.tagline || '';
+        document.getElementById('setting-cloudinary-name').value   = s.cloudinary_cloud_name || '';
+        document.getElementById('setting-cloudinary-preset').value = s.cloudinary_upload_preset || '';
+        document.getElementById('setting-emailjs-service').value   = s.emailjs_service_id || '';
+        document.getElementById('setting-emailjs-template').value  = s.emailjs_template_id || '';
+        document.getElementById('setting-emailjs-key').value       = s.emailjs_public_key || '';
+      }
+    } catch(e) {}
+  }
+  loadSettings();
+
+  // Search in tables
+  ['businesses','textiles','temples','tourism','news','govt'].forEach(panel => {
+    const input = document.getElementById(`search-${panel}`);
+    if (!input) return;
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase();
+      document.querySelectorAll(`#tbody-${panel} tr`).forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>
