@@ -93,7 +93,7 @@ export async function initTourism() {
 
 // ── NEWS ──────────────────────────────────────────────────
 const NEWS_FALLBACK = [
-  { title: 'Sanagiri Town Portal Now Live!', tag: 'Announcement', createdAt: null, content: 'The official digital portal for சங்ககிரி (Sanagiri) is now live at sangagiri.com. Find all local info — businesses, temples, tourism, government offices and emergency contacts in one place.', featured: true },
+  { title: 'Sanagiri Town Portal Now Live!', tag: 'Announcement', createdAt: null, content: 'The Page for to Find all local info — businesses, temples, tourism, government offices and emergency contacts in one place.', featured: true },
   { title: 'Aadi Mariamman Festival This Month', tag: 'Festival', createdAt: null, content: 'The annual Aadi festival at the Mariamman Temple will be held with grand processions and cultural programs. All residents and visitors are warmly welcome.' },
   { title: 'New Bus Route to Sanagiri via Salem', tag: 'Transport', createdAt: null, content: 'TNSTC has announced an additional bus service connecting Sanagiri to Salem city centre, reducing travel time for daily commuters.' },
 ];
