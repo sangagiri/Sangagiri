@@ -1,76 +1,49 @@
-/* ============================================================
-   SANAGIRI TOWN WEBSITE — THEME
-   Color palette inspired by Sankari silk sarees:
-   Deep indigo + gold + warm ivory + terracotta accent
-   ============================================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=Tiro+Tamil:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&family=Tiro+Tamil&display=swap');
 
 :root {
-  /* Brand Colors */
-  --color-primary:       #2D1B69;   /* Deep indigo — Sankari silk base */
-  --color-primary-light: #4A2FA0;
-  --color-primary-dark:  #1A0F40;
-  --color-accent:        #C9960C;   /* Temple gold */
-  --color-accent-light:  #F0C040;
-  --color-terracotta:    #C0522A;   /* Warm earth */
-  --color-surface:       #FDFAF4;   /* Warm ivory */
-  --color-surface-2:     #F3EDD8;
-  --color-text:          #1A1410;
-  --color-text-muted:    #6B5B45;
-  --color-border:        #E2D9C5;
-  --color-white:         #FFFFFF;
-  --color-success:       #2E7D32;
-  --color-error:         #C62828;
-  --color-warning:       #F57F17;
-  --color-info:          #1565C0;
+  /* ── Palette ── */
+  --stone:        #1C1A17;   /* deep charcoal stone */
+  --stone-mid:    #2E2B26;
+  --stone-soft:   #4A4640;
+  --saffron:      #D4820A;   /* temple lamp gold */
+  --saffron-lt:   #F0A830;
+  --saffron-glow: #FAC85A;
+  --lotus:        #B84C6E;   /* lotus pink */
+  --lotus-lt:     #E87A9A;
+  --cream:        #FAF6EF;   /* silk cream */
+  --cream-deep:   #F0E8D8;
+  --cream-border: #DDD0BB;
+  --white:        #FFFFFF;
+  --text:         #1C1A17;
+  --text-mid:     #5C5650;
+  --text-soft:    #8C8680;
+  --success:      #2E7D32;
+  --error:        #C62828;
 
-  /* Admin Colors */
-  --admin-bg:            #0F0A1E;
-  --admin-surface:       #1C1535;
-  --admin-border:        #2D2250;
-  --admin-text:          #E8E0F5;
-  --admin-muted:         #9E8FC0;
+  /* ── Admin ── */
+  --admin-bg:       #0D0C0A;
+  --admin-surface:  #18160F;
+  --admin-border:   #2A2720;
+  --admin-text:     #E8E0D0;
+  --admin-muted:    #9A9080;
 
-  /* Typography */
-  --font-display:  'Playfair Display', Georgia, serif;
-  --font-body:     'DM Sans', system-ui, sans-serif;
-  --font-tamil:    'Tiro Tamil', 'Noto Sans Tamil', serif;
+  /* ── Type ── */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-tamil:   'Tiro Tamil', 'Noto Sans Tamil', serif;
 
-  /* Spacing */
-  --space-xs:  4px;
-  --space-sm:  8px;
-  --space-md:  16px;
-  --space-lg:  24px;
-  --space-xl:  40px;
-  --space-2xl: 64px;
-  --space-3xl: 96px;
+  /* ── Space ── */
+  --s1: 8px; --s2: 16px; --s3: 24px; --s4: 40px; --s5: 64px; --s6: 96px;
 
-  /* Radius */
-  --radius-sm:  6px;
-  --radius-md:  12px;
-  --radius-lg:  20px;
-  --radius-xl:  32px;
-  --radius-full: 9999px;
+  /* ── Radius ── */
+  --r-sm: 6px; --r-md: 12px; --r-lg: 20px; --r-xl: 32px; --r-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm:  0 1px 4px rgba(45,27,105,0.08);
-  --shadow-md:  0 4px 16px rgba(45,27,105,0.12);
-  --shadow-lg:  0 8px 32px rgba(45,27,105,0.16);
-  --shadow-xl:  0 16px 48px rgba(45,27,105,0.20);
+  /* ── Shadow ── */
+  --shadow-sm: 0 1px 4px rgba(28,26,23,.06);
+  --shadow-md: 0 4px 20px rgba(28,26,23,.10);
+  --shadow-lg: 0 8px 40px rgba(28,26,23,.14);
 
-  /* Transitions */
-  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Silk pattern background utility */
-.silk-bg {
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 2px,
-    rgba(201,150,12,0.04) 2px,
-    rgba(201,150,12,0.04) 4px
-  );
+  /* ── Transition ── */
+  --ease: .25s cubic-bezier(.4,0,.2,1);
+  --ease-slow: .45s cubic-bezier(.4,0,.2,1);
 }
